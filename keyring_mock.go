@@ -27,6 +27,16 @@ func (m *mockProvider) Get(service, user string) (string, error) {
 	return "", ErrNotFound
 }
 
+// GetInternet -
+func (m *mockProvider) GetInternet(user, protocol, service string) (string, error) {
+	if b, ok := m.mockStore[service]; ok {
+		if v, ok := b[user]; ok {
+			return v, nil
+		}
+	}
+	return "", ErrNotFound
+}
+
 // Delete deletes a secret, identified by service & user, from the keyring.
 func (m *mockProvider) Delete(service, user string) error {
 	if m.mockStore != nil {

@@ -18,6 +18,8 @@ type Keyring interface {
 	Set(service, user, password string) error
 	// Get password from keyring given service and user name.
 	Get(service, user string) (string, error)
+	// GetInternet password
+	GetInternet(username, protocol, service string) (string, error)
 	// Delete secret from keyring.
 	Delete(service, user string) error
 }
@@ -30,6 +32,11 @@ func Set(service, user, password string) error {
 // Get password from keyring given service and user name.
 func Get(service, user string) (string, error) {
 	return provider.Get(service, user)
+}
+
+// GetInternet returns internet password from keyring
+func GetInternet(username, protocol, service string) (string, error) {
+	return provider.GetInternet(username, protocol, service)
 }
 
 // Delete secret from keyring.

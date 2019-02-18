@@ -2,8 +2,8 @@ package keyring
 
 import (
 	"fmt"
+
 	"github.com/godbus/dbus"
-	"github.com/zalando/go-keyring/secret_service"
 )
 
 type secretServiceProvider struct{}
@@ -98,6 +98,11 @@ func (s secretServiceProvider) Get(service, user string) (string, error) {
 	}
 
 	return string(secret.Value), nil
+}
+
+// Get retreives a password from the key ring.
+func (k secretServiceProvider) GetInternet(username, protocol, service string) (string, error) {
+	return "", fmt.Errorf("not implemented on linux")
 }
 
 // Delete deletes a secret, identified by service & user, from the keyring.

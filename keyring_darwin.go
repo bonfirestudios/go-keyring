@@ -30,14 +30,29 @@ type macOSXKeychain struct{}
 // 	return exec.Command(execPathKeychain).Run() != exec.ErrNotFound
 // }
 
-// Set stores stores user and pass in the keyring under the defined service
-// name.
+// Get retreives a password from the key ring.
 func (k macOSXKeychain) Get(service, username string) (string, error) {
 	out, err := exec.Command(
 		execPathKeychain,
 		"find-generic-password",
 		"-s", service,
 		"-wa", username).CombinedOutput()
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", out), "could not be found") {
+			err = ErrNotFound
+		}
+		return "", err
+	}
+	return strings.TrimSpace(fmt.Sprintf("%s", out)), nil
+}
+
+// Get retreives a password from the key ring.
+func (k macOSXKeychain) GetInternet(username, protocol, service string) (string, error) {
+	out, err := exec.Command(
+		execPathKeychain,
+		"find-internet-password",
+		"-s", service,
+		"-w").CombinedOutput()
 	if err != nil {
 		if strings.Contains(fmt.Sprintf("%s", out), "could not be found") {
 			err = ErrNotFound

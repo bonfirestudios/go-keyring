@@ -1,6 +1,10 @@
 package keyring
 
-import "github.com/danieljoos/wincred"
+import (
+	"fmt"
+
+	"github.com/danieljoos/wincred"
+)
 
 const errNotFound = "Element not found."
 
@@ -9,6 +13,19 @@ type windowsKeychain struct{}
 // Get gets a secret from the keyring given a service name and a user.
 func (k windowsKeychain) Get(service, username string) (string, error) {
 	cred, err := wincred.GetGenericCredential(k.credName(service, username))
+	if err != nil {
+		if err.Error() == errNotFound {
+			return "", ErrNotFound
+		}
+		return "", err
+	}
+
+	return string(cred.CredentialBlob), nil
+}
+
+// Get gets a secret from the keyring given a service name and a user.
+func (k windowsKeychain) GetInternet(username, protocol, service string) (string, error) {
+	cred, err := wincred.GetGenericCredential(fmt.Sprintf("%v:%v%v", username, protocol, service))
 	if err != nil {
 		if err.Error() == errNotFound {
 			return "", ErrNotFound
